@@ -75,24 +75,22 @@ def get_keys_from_document(filename):
     `\cite*{key}` style, where `*` can be any character or none.
 
     """
-    k_md = '\[@' + BIBKEY_PAT + '\]|(?<!\[)@' + BIBKEY_PAT
     k_latex = '\\cite.?\[?(?:.+?)?\]?\{' + BIBKEY_PAT + '\}'
 
-    text = open(filename, 'r', encoding='utf-8').read()
-    md = re.findall(k_md, text)
-    md_brackets, md_intext = list(zip(*md))
-    md_brackets, md_intext = list(md_brackets), list(md_intext)
+    text = open(filename, 'r', encoding='utf_8').read()
+    #md_brackets, md_intext = list(zip(*md))
+    #md_brackets, md_intext = list(md_brackets), list(md_intext)
 
     matches = []
     # Split up finds if necessary to deal with [@key0; @key1]
-    for f in md_brackets:
-        if '@' in f:
-            sub_f = f.replace(' ', '').replace('@', '').split(';')
-            matches.extend(sub_f)
-        elif f != '':
-            matches.append(f)
+    # for f in md_brackets:
+    #     if '@' in f:
+    #         sub_f = f.replace(' ', '').replace('@', '').split(';')
+    #         matches.extend(sub_f)
+    #     elif f != '':
+    #         matches.append(f)
 
-    matches.extend([i for i in md_intext if i != ''])
+    #matches.extend([i for i in md_intext if i != ''])
 
     latex = re.findall(k_latex, text)
     for f in latex:
@@ -103,16 +101,40 @@ def get_keys_from_document(filename):
             matches.append(f)
 
     logging.debug('Found keys in document: ' + ', '.join(matches))
+
     return matches
 
 
 def extract_bibliography(source_doc, source_bib, target_bib):
     # Extract citation keys from source file
+
     keys = get_keys_from_document(source_doc)
     # Read source bibliography and generate subset
-    with open(source_bib, 'r', encoding='utf-8') as f:
+    with open(source_bib, 'r', encoding='utf_8') as f:
         entries = parse_bibtex(f.readlines())
     subset = subset_bibliography(entries, keys)
+    f = open('D:/testttbib.dat','w')
+    f.write(str(keys))
+    f.close()
     # Write extracted subset to new bibliography file
-    with open(target_bib, 'w', encoding='utf-8') as f:
+    with open(target_bib, 'a', encoding='utf_8') as f:
+        emit_bibliography(subset, f)
+
+
+def extract_bibliography_line(source_key, source_bib, target_bib):
+    # Extract citation keys from source file
+    matches = []
+    matches.append(source_key)
+    # Read source bibliography and generate subset
+    f = open('D:/testttline.dat','w')
+    f.write(str(matches))
+    f.close()
+    with open(source_bib, 'r', encoding='utf_8') as f:
+        entries = parse_bibtex(f.readlines())
+    subset = subset_bibliography(entries, matches)
+    f = open('D:/testtt.dat','w')
+    f.write(str(subset))
+    f.close()
+    # Write extracted subset to new bibliography file
+    with open(target_bib, 'a', encoding='utf_8') as f:
         emit_bibliography(subset, f)

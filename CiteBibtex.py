@@ -10,6 +10,9 @@ from .lib import md2bib
 
 
 class CiteBibtex(object):
+    def __init__(self):
+        self._update_in_progress = False
+
     def plugin_loaded_setup(self):
         ##
         # Load settings
@@ -64,6 +67,9 @@ class CiteBibtex(object):
         return citation_string
 
     def check_modified(self, ref_file):
+        f = open('D:/test11.dat','w')
+        f.write(str(ref_file))
+        f.close()
         try:
             modified = os.path.getmtime(ref_file)
         except FileNotFoundError:
@@ -199,6 +205,8 @@ class CiteBibtex(object):
         citation = self.get_citation_style().replace('$CITATION', ref_key)
         view = sublime.active_window().active_view()
         view.run_command('insert_reference', {'reference': citation})
+        view.run_command('save')
+        self.extract_citations_line(ref_key)
 
     def insert_citation(self, refid):
         if refid == -1:  # Don't do anything if nothing was selected
@@ -215,6 +223,7 @@ class CiteBibtex(object):
         view = sublime.active_window().active_view()
         view.run_command('insert_reference', {'reference': text})
 
+
     def extract_citations(self):
         """
         Extracts those citations from the global BibTeX file
@@ -223,15 +232,64 @@ class CiteBibtex(object):
 
         """
         current_file = sublime.active_window().active_view().file_name()
+        projectfolder = sublime.active_window().folders()
+        projectfolder = projectfolder[0] +'\\'
+
+        for file in os.listdir(projectfolder):
+            if file.endswith('.bib'):
+                bibsubset_file = file
+                break
+
+        bibsubset_file = projectfolder + bibsubset_file
+
         # split off extension
+        f = open('D:/test.dat','w')
+        f.write(str(bibsubset_file))
+        f.close()
+        #encoding = self.get_setting('bibtex_file_encoding')
+
         basefile, extension = os.path.splitext(current_file)
-        bibsubset_file = basefile + '.bib'
+
         bibtex_file = self.plugin_settings.get('bibtex_file')
+
+
+
         md2bib.extract_bibliography(current_file, bibtex_file,
                                     bibsubset_file)
         _, fname = os.path.split(bibsubset_file)
         sublime.status_message('Extracted citations to {}'.format(fname))
 
+    def extract_citations_line(self,ref_key):
+        """
+        Extracts those citations from the global BibTeX file
+        that are cited in the currently active file, and saves them
+        to a BibTeX file alongside the currently active file.
+
+        """
+        # current_line = ref_key
+        projectfolder = sublime.active_window().folders()
+        projectfolder = projectfolder[0] +'\\'
+
+        for file in os.listdir(projectfolder):
+            if file.endswith('.bib'):
+                bibsubset_file = file
+                break
+
+        bibsubset_file = projectfolder + bibsubset_file
+
+        # split off extension
+        #encoding = self.get_setting('bibtex_file_encoding')
+
+        #basefile, extension = os.path.splitext(current_file)
+
+        bibtex_file = self.plugin_settings.get('bibtex_file')
+
+
+
+        md2bib.extract_bibliography_line(ref_key, bibtex_file,
+                                    bibsubset_file)
+        _, fname = os.path.split(bibsubset_file)
+        sublime.status_message('Extracted citations to {}'.format(fname))
 
 class CiteBibtexShowReferenceSelectorCommand(sublime_plugin.ApplicationCommand):
     def run(self, **kwargs):
