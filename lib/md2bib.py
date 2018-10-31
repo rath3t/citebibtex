@@ -113,9 +113,6 @@ def extract_bibliography(source_doc, source_bib, target_bib):
     with open(source_bib, 'r', encoding='utf_8') as f:
         entries = parse_bibtex(f.readlines())
     subset = subset_bibliography(entries, keys)
-    f = open('D:/testttbib.dat','w')
-    f.write(str(keys))
-    f.close()
     # Write extracted subset to new bibliography file
     with open(target_bib, 'a', encoding='utf_8') as f:
         emit_bibliography(subset, f)
@@ -126,15 +123,9 @@ def extract_bibliography_line(source_key, source_bib, target_bib):
     matches = []
     matches.append(source_key)
     # Read source bibliography and generate subset
-    f = open('D:/testttline.dat','w')
-    f.write(str(matches))
-    f.close()
     with open(source_bib, 'r', encoding='utf_8') as f:
         entries = parse_bibtex(f.readlines())
     subset = subset_bibliography(entries, matches)
-    f = open('D:/testtt.dat','w')
-    f.write(str(subset))
-    f.close()
     # Write extracted subset to new bibliography file
     with open(target_bib, 'a', encoding='utf_8') as f:
         emit_bibliography(subset, f)

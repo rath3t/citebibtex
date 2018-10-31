@@ -67,9 +67,6 @@ class CiteBibtex(object):
         return citation_string
 
     def check_modified(self, ref_file):
-        f = open('D:/test11.dat','w')
-        f.write(str(ref_file))
-        f.close()
         try:
             modified = os.path.getmtime(ref_file)
         except FileNotFoundError:
@@ -243,9 +240,6 @@ class CiteBibtex(object):
         bibsubset_file = projectfolder + bibsubset_file
 
         # split off extension
-        f = open('D:/test.dat','w')
-        f.write(str(bibsubset_file))
-        f.close()
         #encoding = self.get_setting('bibtex_file_encoding')
 
         basefile, extension = os.path.splitext(current_file)
